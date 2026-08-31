@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "flario": {
+      "command": "bunx",
+      "args": ["flario"],
+      "env": {
+        "FLARE_RPC": "https://flare-api.flare.network/ext/C/rpc",
+        "FLARE_RPC_TESTNET": "https://coston2-api.flare.network/ext/C/rpc"
+      }
+    }
+  }
+}
