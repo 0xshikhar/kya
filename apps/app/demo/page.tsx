@@ -85,7 +85,7 @@ export default function DemoPage() {
     setSelectedNodeId(node.id)
   }
 
-  const handleExecuteScenario = async (path: "path1" | "path2" | "path3") => {
+  const handleExecuteScenario = async (path: "path1" | "path2" | "path3" | "path4" | "path5") => {
     setIsLoading(true)
     setActiveScenario(path)
     try {
@@ -191,7 +191,7 @@ export default function DemoPage() {
         <div className="flex items-center gap-2">
           <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50/80 px-3 py-1 text-[11px] font-medium text-rose-800">
             <span className="h-2 w-2 rounded-full bg-rose-600 animate-pulse" />
-            <span>FLARE COSTON2 · FTSOv2 LIVE</span>
+            <span>FLARE COSTON2 · FTSOv2 & FDC LIVE</span>
           </div>
 
           <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-800">
@@ -220,49 +220,75 @@ export default function DemoPage() {
       </header>
 
       {/* Scenario Switcher Toolbar */}
-      <div className="flex items-center justify-between border-b border-slate-200 bg-white/95 px-4 py-2 shrink-0 z-10">
-        <div className="flex flex-wrap items-center gap-2 text-xs">
+      <div className="flex items-center justify-between border-b border-slate-200 bg-white/95 px-4 py-2 shrink-0 z-10 overflow-x-auto">
+        <div className="flex items-center gap-2 text-xs shrink-0">
           <span className="font-semibold text-slate-500 uppercase tracking-wider text-[10px] mr-1">
-            Demonstration Scenarios:
+            Scenarios:
           </span>
 
           <button
             onClick={() => handleExecuteScenario("path1")}
             disabled={isLoading}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition border ${
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-medium transition border text-xs ${
               activeScenario === "path1"
                 ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
                 : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
             }`}
           >
             <Play className="h-3 w-3" />
-            <span>Path 1: HashMatch Job Settlement</span>
+            <span>Path 1: HashMatch</span>
           </button>
 
           <button
             onClick={() => handleExecuteScenario("path2")}
             disabled={isLoading}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition border ${
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-medium transition border text-xs ${
               activeScenario === "path2"
                 ? "bg-amber-600 text-white border-amber-600 shadow-xs"
                 : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
             }`}
           >
             <Zap className="h-3 w-3 text-amber-500" />
-            <span>Path 2: FTSOv2 USD Policy Revert</span>
+            <span>Path 2: FTSOv2 Revert</span>
           </button>
 
           <button
             onClick={() => handleExecuteScenario("path3")}
             disabled={isLoading}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition border ${
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-medium transition border text-xs ${
               activeScenario === "path3"
                 ? "bg-rose-600 text-white border-rose-600 shadow-xs"
                 : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
             }`}
           >
             <AlertTriangle className="h-3 w-3 text-rose-500" />
-            <span>Path 3: Prompt-Injection Kill & Sibling Isolation</span>
+            <span>Path 3: 1-Tx Kill</span>
+          </button>
+
+          <button
+            onClick={() => handleExecuteScenario("path4")}
+            disabled={isLoading}
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-medium transition border text-xs ${
+              activeScenario === "path4"
+                ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+                : "bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100"
+            }`}
+          >
+            <Shield className="h-3 w-3 text-purple-600" />
+            <span>Path 4: FDC XRPL Settlement</span>
+          </button>
+
+          <button
+            onClick={() => handleExecuteScenario("path5")}
+            disabled={isLoading}
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-medium transition border text-xs ${
+              activeScenario === "path5"
+                ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
+                : "bg-indigo-50 text-indigo-800 border-indigo-200 hover:bg-indigo-100"
+            }`}
+          >
+            <Lock className="h-3 w-3 text-indigo-600" />
+            <span>Path 5: FDC Mismatch & Refund</span>
           </button>
         </div>
 

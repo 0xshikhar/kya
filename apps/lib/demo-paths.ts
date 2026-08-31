@@ -291,6 +291,103 @@ export function executePath3_RevokeAndSibling(): { success: boolean; message: st
   }
 }
 
+export function executePath4_FdcXrplPayment(): { success: boolean; message: string } {
+  // Scenario 4: Worker Alpha funds $50 FXRP job -> Valid XRPL Payment -> FDC Round -> Merkle Proof -> Settled
+  const state = JSON.parse(JSON.stringify(currentState)) as DemoGraphState
+
+  const alpha = state.nodes.find((n) => n.id === ALPHA_ID)
+  if (alpha) {
+    alpha.data.idle = 3450
+    alpha.data.locked = 0
+    alpha.data.status = "SETTLED"
+    alpha.data.activeJob = {
+      id: 204,
+      provider: "0x92db14e4...62de0",
+      amount: 50,
+      status: "FDC_XRPL_SETTLED",
+    }
+  }
+
+  state.events.push(
+    {
+      id: `ev-${Date.now()}-1`,
+      type: "JOB_FUNDED",
+      title: "Escrow Job #204: XRPL Payment Condition",
+      details: "Locked $50 FXRP. Required destination: rHb9CJAWy...bwdtyTh, Memo: KYA-XRPL-FDC-SETTLE-778.",
+      txHash: "0xaa11223344556677889900aabbccddeeffaa11223344556677889900aabbccddee",
+      timestamp: "Block #1048280",
+    },
+    {
+      id: `ev-${Date.now()}-2`,
+      type: "FTSO_CHECK",
+      title: "FDC Voting Epoch Wait (~90s)",
+      details: "Attestation requested on Coston2. Flare consensus round 10420 achieved finality.",
+      txHash: "0xbb223344556677889900aabbccddeeffbb223344556677889900aabbccddeeff11",
+      timestamp: "Block #1048285",
+    },
+    {
+      id: `ev-${Date.now()}-3`,
+      type: "JOB_COMPLETED",
+      title: "FDC Payment Verified & Settled",
+      details: "DA layer Merkle proof verified against IFdcVerification. $50 FXRP paid to XRPL bridge operator.",
+      txHash: "0xcc3344556677889900aabbccddeeffcc3344556677889900aabbccddeeff223344",
+      timestamp: "Block #1048288",
+    }
+  )
+
+  currentState = state
+  return {
+    success: true,
+    message: "Path 4 executed: FDC XRPL Payment attested on Coston2 and escrow settled via Merkle proof.",
+  }
+}
+
+export function executePath5_FdcDeadlineRefund(): { success: boolean; message: string } {
+  // Scenario 5: Worker Alpha funds $50 FXRP job -> Wrong memo provided -> FDC rejects -> Deadline expires -> Refunded
+  const state = JSON.parse(JSON.stringify(currentState)) as DemoGraphState
+
+  const alpha = state.nodes.find((n) => n.id === ALPHA_ID)
+  if (alpha) {
+    alpha.data.idle = 3500
+    alpha.data.locked = 0
+    alpha.data.status = "ACTIVE"
+    alpha.data.activeJob = undefined
+  }
+
+  state.events.push(
+    {
+      id: `ev-${Date.now()}-1`,
+      type: "JOB_FUNDED",
+      title: "Escrow Job #205 Funded ($50 FXRP)",
+      details: "Locked $50 FXRP awaiting FDC XRPL Payment delivery.",
+      txHash: "0xdd44556677889900aabbccddeeffdd44556677889900aabbccddeeff3344556677",
+      timestamp: "Block #1048290",
+    },
+    {
+      id: `ev-${Date.now()}-2`,
+      type: "POLICY_REVERT",
+      title: "FDC Verification Revert: Mismatched Memo",
+      details: "Submitted XRPL proof carried forged memo 'KYA-BAD-MEMO'. FdcPaymentEvaluator reverted.",
+      txHash: "0xee556677889900aabbccddeeffee556677889900aabbccddeeff44556677889900",
+      timestamp: "Block #1048292",
+    },
+    {
+      id: `ev-${Date.now()}-3`,
+      type: "REFUND",
+      title: "Deadline Passed: Escrow Refunded",
+      details: "Provider failed to provide valid proof before deadline. $50 FXRP refunded to Alpha idle balance.",
+      txHash: "0xff6677889900aabbccddeeffff6677889900aabbccddeeff556677889900aabbcc",
+      timestamp: "Block #1048295",
+    }
+  )
+
+  currentState = state
+  return {
+    success: true,
+    message: "Path 5 executed: Mismatched FDC proof rejected; deadline expired and $50 FXRP refunded.",
+  }
+}
+
 export function revokeSpecificNode(nodeId: string): { success: boolean; message: string } {
   const state = JSON.parse(JSON.stringify(currentState)) as DemoGraphState
   const targetNode = state.nodes.find((n) => n.id === nodeId || n.data.mandateId === nodeId)

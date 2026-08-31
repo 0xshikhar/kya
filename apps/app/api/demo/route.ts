@@ -4,6 +4,8 @@ import {
   executePath1_Happy,
   executePath2_LimitBreach,
   executePath3_RevokeAndSibling,
+  executePath4_FdcXrplPayment,
+  executePath5_FdcDeadlineRefund,
   revokeSpecificNode,
   resetDemoState,
 } from "@/lib/demo-paths"
@@ -49,6 +51,16 @@ export async function POST(req: Request) {
 
     if (action === "path3") {
       const result = executePath3_RevokeAndSibling()
+      return NextResponse.json(serializeJson({ success: true, result, graph: fetchCurrentState() }))
+    }
+
+    if (action === "path4") {
+      const result = executePath4_FdcXrplPayment()
+      return NextResponse.json(serializeJson({ success: true, result, graph: fetchCurrentState() }))
+    }
+
+    if (action === "path5") {
+      const result = executePath5_FdcDeadlineRefund()
       return NextResponse.json(serializeJson({ success: true, result, graph: fetchCurrentState() }))
     }
 
