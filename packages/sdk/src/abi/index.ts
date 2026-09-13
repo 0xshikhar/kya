@@ -92,6 +92,35 @@ export const MandateTreeABI = [
     ],
     stateMutability: "view",
   },
+  {
+    type: "event",
+    name: "RootCreated",
+    inputs: [
+      { indexed: true, name: "rootId", type: "bytes32" },
+      { indexed: true, name: "owner", type: "address" },
+      { indexed: true, name: "agent", type: "address" },
+      { indexed: false, name: "budget", type: "uint128" },
+    ],
+  },
+  {
+    type: "event",
+    name: "Spawned",
+    inputs: [
+      { indexed: true, name: "childId", type: "bytes32" },
+      { indexed: true, name: "parentId", type: "bytes32" },
+      { indexed: true, name: "childAgent", type: "address" },
+      { indexed: false, name: "granted", type: "uint128" },
+    ],
+  },
+  {
+    type: "event",
+    name: "SubtreeRevoked",
+    inputs: [
+      { indexed: true, name: "mandateId", type: "bytes32" },
+      { indexed: true, name: "revoker", type: "address" },
+      { indexed: false, name: "newEpoch", type: "uint32" },
+    ],
+  },
 ] as const
 
 export const JobAdapterABI = [
@@ -132,6 +161,32 @@ export const JobAdapterABI = [
     inputs: [{ name: "jobId", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    name: "JobFunded",
+    inputs: [
+      { indexed: true, name: "jobId", type: "uint256" },
+      { indexed: true, name: "mandateId", type: "bytes32" },
+      { indexed: true, name: "provider", type: "address" },
+      { indexed: false, name: "amount", type: "uint128" },
+    ],
+  },
+  {
+    type: "event",
+    name: "JobSubmitted",
+    inputs: [
+      { indexed: true, name: "jobId", type: "uint256" },
+      { indexed: false, name: "deliverableHash", type: "bytes32" },
+    ],
+  },
+  {
+    type: "event",
+    name: "JobCompleted",
+    inputs: [
+      { indexed: true, name: "jobId", type: "uint256" },
+      { indexed: false, name: "amountPaid", type: "uint128" },
+    ],
   },
 ] as const
 
@@ -199,5 +254,82 @@ export const CredentialRegistryABI = [
       { name: "metadataURI", type: "string" },
     ],
     stateMutability: "view",
+  },
+  {
+    type: "event",
+    name: "AgentRegistered",
+    inputs: [
+      { indexed: true, name: "tokenId", type: "uint256" },
+      { indexed: true, name: "agentId", type: "bytes32" },
+      { indexed: true, name: "agentAddress", type: "address" },
+      { indexed: false, name: "metadataURI", type: "string" },
+    ],
+  },
+  {
+    type: "event",
+    name: "AgentRevoked",
+    inputs: [
+      { indexed: true, name: "tokenId", type: "uint256" },
+      { indexed: true, name: "agentId", type: "bytes32" },
+    ],
+  },
+] as const
+
+export const HashMatchEvaluatorABI = [
+  {
+    type: "function",
+    name: "evaluate",
+    inputs: [{ name: "jobId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    name: "Evaluated",
+    inputs: [
+      { indexed: true, name: "jobId", type: "uint256" },
+      { indexed: false, name: "passed", type: "bool" },
+      { indexed: false, name: "submitted", type: "bytes32" },
+      { indexed: false, name: "expected", type: "bytes32" },
+    ],
+  },
+] as const
+
+export const ERC20ABI = [
+  {
+    type: "function",
+    name: "balanceOf",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "approve",
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "transfer",
+    inputs: [
+      { name: "recipient", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    name: "Transfer",
+    inputs: [
+      { indexed: true, name: "from", type: "address" },
+      { indexed: true, name: "to", type: "address" },
+      { indexed: false, name: "value", type: "uint256" },
+    ],
   },
 ] as const
