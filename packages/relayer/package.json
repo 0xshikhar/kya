@@ -1,0 +1,21 @@
+{
+  "name": "@kya-network/relayer",
+  "version": "1.0.0",
+  "description": "KYA Network FDC settlement relayer worker for Flare Coston2 and Mainnet",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "bun run src/index.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@kya-network/sdk": "file:../sdk",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.7.3"
+  }
+}
