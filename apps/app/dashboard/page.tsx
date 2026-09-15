@@ -19,7 +19,12 @@ import {
   KeyRound,
   Download,
   Terminal,
+  ArrowLeft,
+  X,
+  Wallet,
 } from "lucide-react"
+import { WalletButton } from "@/components/wallet/wallet-button"
+import { useWallet } from "@/hooks/use-wallet"
 
 interface NodeData {
   id: string
@@ -45,12 +50,13 @@ interface JobData {
 }
 
 export default function OperatorDashboard() {
-  const [network, setNetwork] = useState<"coston2" | "mainnet">("coston2")
+  const { address: connectedAddress, isConnected, balance: walletBalance } = useWallet()
   const [selectedNode, setSelectedNode] = useState<string>("root")
   const [isSpawning, setIsSpawning] = useState(false)
   const [spawnAgentName, setSpawnAgentName] = useState("")
   const [spawnAmount, setSpawnAmount] = useState("1000")
   const [spawnUsdCap, setSpawnUsdCap] = useState("50")
+
 
   const [nodes, setNodes] = useState<NodeData[]>([
     {
@@ -188,9 +194,11 @@ export default function OperatorDashboard() {
 
   const exportIntegrityPack = () => {
     const pack = {
-      protocol: "KYA Network",
+      protocol: "KYA by Mandant",
       version: "1.0.0",
-      network: network === "mainnet" ? "Flare Mainnet (14)" : "Flare Coston2 (114)",
+      network: "Flare Coston2 Testnet (Chain ID: 114)",
+      flareMainnetStatus: "DISABLED_PENDING_AUDIT",
+      operatorAddress: connectedAddress || "0xAA11...49F1",
       timestamp: new Date().toISOString(),
       conservationEquation: {
         formula: "Idle + ChildGranted + JobLocked = Granted",
@@ -204,7 +212,7 @@ export default function OperatorDashboard() {
         id: n.id,
         name: n.name,
         status: n.status,
-        address: n.address,
+        address: n.id === "root" && connectedAddress ? connectedAddress : n.address,
         idle: `$${n.idle}`,
         usdCap: `$${n.usdCapPerCall}/call`,
       })),
@@ -214,69 +222,69 @@ export default function OperatorDashboard() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `kya-integrity-pack-${Date.now()}.json`
+    a.download = `kya-mandant-integrity-pack-${Date.now()}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-rose-500/30">
+    <div className="min-h-screen bg-[#fff8f7] text-zinc-950 font-sans selection:bg-rose-500/20">
       {/* Top Navigation */}
-      <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40">
+      <header className="border-b border-rose-100 bg-white/85 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-rose-600/20 border border-rose-500/40 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-rose-400" />
+            <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+              <div className="grid h-7 w-7 place-items-center rounded-full bg-rose-500 text-white text-xs font-semibold shadow-sm">
+                {"✺"}
               </div>
-              <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-                KYA Network
-              </span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-bold tracking-tight text-zinc-950 text-base">KYA</span>
+                <span className="text-xs font-medium text-zinc-500">by Mandant</span>
+              </div>
             </Link>
-            <span className="text-xs px-2.5 py-0.5 rounded-full font-mono bg-rose-500/10 text-rose-400 border border-rose-500/20">
+
+            <span className="hidden sm:inline-flex text-[11px] px-2.5 py-0.5 rounded-full font-mono bg-rose-50 text-rose-700 border border-rose-200 font-semibold">
               OPERATOR COMMAND CENTER
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Network Selector */}
-            <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-1 text-xs">
-              <button
-                onClick={() => setNetwork("coston2")}
-                className={`px-3 py-1 rounded-md transition-all ${
-                  network === "coston2"
-                    ? "bg-rose-600 text-white font-medium shadow-sm"
-                    : "text-slate-400 hover:text-white"
-                }`}
+            {/* Network Indicator - Coston2 Live, Flare Mainnet Disabled */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50/90 px-3 py-1 text-xs font-semibold text-emerald-900 shadow-2xs">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+                <span>Flare Coston2 (114)</span>
+              </div>
+
+              <div
+                className="hidden md:flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded-full border border-zinc-200/80 bg-zinc-100/70 text-zinc-400 cursor-not-allowed select-none"
+                title="Flare Mainnet is disabled pending final security audit"
               >
-                Flare Coston2
-              </button>
-              <button
-                onClick={() => setNetwork("mainnet")}
-                className={`px-3 py-1 rounded-md transition-all ${
-                  network === "mainnet"
-                    ? "bg-rose-600 text-white font-medium shadow-sm"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                Flare Mainnet
-              </button>
+                <Lock className="w-2.5 h-2.5 text-zinc-400" />
+                <span>Flare Main: Disabled</span>
+              </div>
             </div>
+
+            {/* Live Web3 Wallet Connection */}
+            <WalletButton />
 
             <Link
               href="/demo"
-              className="text-xs px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 transition-colors flex items-center gap-1.5"
+              className="text-xs px-3 py-1.5 rounded-full border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 transition-colors flex items-center gap-1.5 shadow-xs font-medium"
             >
-              <Terminal className="w-3.5 h-3.5 text-rose-400" />
-              DAG Visualizer
+              <Terminal className="w-3.5 h-3.5 text-rose-600" />
+              <span className="hidden sm:inline">DAG Visualizer</span>
             </Link>
 
             <button
               onClick={exportIntegrityPack}
-              className="text-xs px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-all flex items-center gap-1.5"
+              className="text-xs px-3 py-1.5 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100/80 transition-all flex items-center gap-1.5 font-medium shadow-xs"
             >
-              <Download className="w-3.5 h-3.5" />
-              Integrity Pack
+              <Download className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="hidden sm:inline">Integrity Pack</span>
             </button>
           </div>
         </div>
@@ -285,52 +293,52 @@ export default function OperatorDashboard() {
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Top Metric Bar & Mathematical Conservation Banner */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-4">
-            <div className="text-xs text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1.5">
-              <Coins className="w-3.5 h-3.5 text-rose-400" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="rounded-2xl border border-rose-100/90 bg-white/95 p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-[11px] text-zinc-500 font-semibold uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <Coins className="w-3.5 h-3.5 text-rose-600" />
               Root Treasury Budget
             </div>
-            <div className="text-2xl font-bold mt-2 text-white font-mono">
-              ${rootNode.granted.toLocaleString()} <span className="text-xs text-slate-400 font-sans">USDC</span>
+            <div className="text-2xl sm:text-3xl font-extrabold mt-2 text-zinc-950 font-mono tracking-tight">
+              ${rootNode.granted.toLocaleString()} <span className="text-xs text-zinc-500 font-sans font-normal">USDC</span>
             </div>
-            <div className="text-xs text-slate-500 mt-1">Multi-asset vault backed on Flare</div>
+            <div className="text-xs text-zinc-500 mt-1">Multi-asset vault backed on Flare</div>
           </div>
 
-          <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-4">
-            <div className="text-xs text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="rounded-2xl border border-rose-100/90 bg-white/95 p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-[11px] text-zinc-500 font-semibold uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               Idle Unallocated
             </div>
-            <div className="text-2xl font-bold mt-2 text-emerald-400 font-mono">
-              ${rootNode.idle.toLocaleString()} <span className="text-xs text-slate-400 font-sans">USDC</span>
+            <div className="text-2xl sm:text-3xl font-extrabold mt-2 text-emerald-600 font-mono tracking-tight">
+              ${rootNode.idle.toLocaleString()} <span className="text-xs text-zinc-500 font-sans font-normal">USDC</span>
             </div>
-            <div className="text-xs text-slate-500 mt-1">Available for downward attenuation</div>
+            <div className="text-xs text-zinc-500 mt-1">Available for downward attenuation</div>
           </div>
 
-          <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-4">
-            <div className="text-xs text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1.5">
-              <Bot className="w-3.5 h-3.5 text-blue-400" />
+          <div className="rounded-2xl border border-rose-100/90 bg-white/95 p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-[11px] text-zinc-500 font-semibold uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <Bot className="w-3.5 h-3.5 text-blue-600" />
               Allocated to Agents
             </div>
-            <div className="text-2xl font-bold mt-2 text-blue-400 font-mono">
-              ${rootNode.childGranted.toLocaleString()} <span className="text-xs text-slate-400 font-sans">USDC</span>
+            <div className="text-2xl sm:text-3xl font-extrabold mt-2 text-zinc-950 font-mono tracking-tight">
+              ${rootNode.childGranted.toLocaleString()} <span className="text-xs text-zinc-500 font-sans font-normal">USDC</span>
             </div>
-            <div className="text-xs text-slate-500 mt-1">{nodes.length - 1} autonomous child nodes</div>
+            <div className="text-xs text-zinc-500 mt-1">{nodes.length - 1} autonomous child nodes</div>
           </div>
 
-          <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
-            <div className="text-xs text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-amber-400" />
+          <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/40 p-5 flex flex-col justify-between shadow-sm">
+            <div className="text-[11px] text-emerald-900 font-semibold uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <Lock className="w-3.5 h-3.5 text-emerald-700" />
               Conservation Invariant
             </div>
             <div className="flex items-center gap-2 mt-2">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-mono text-sm font-semibold text-emerald-400">
-                STRICTLY CONSERVED
+              <span className="font-mono text-sm font-bold text-emerald-800">
+                STRICTLY CONSERVED (L0)
               </span>
             </div>
-            <div className="text-[11px] font-mono text-slate-400 mt-1">
+            <div className="text-[11px] font-mono text-emerald-700 mt-1 font-medium">
               ${rootNode.idle} + ${rootNode.childGranted} = ${rootNode.granted}
             </div>
           </div>
@@ -341,13 +349,13 @@ export default function OperatorDashboard() {
           {/* Node Cards List */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Layers className="w-4 h-4 text-rose-400" />
+              <h2 className="text-base sm:text-lg font-bold text-zinc-950 flex items-center gap-2">
+                <Layers className="w-4 h-4 text-rose-600" />
                 Active Mandate Hierarchy
               </h2>
               <button
                 onClick={() => setIsSpawning(true)}
-                className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-medium flex items-center gap-1.5 transition-colors shadow-sm"
+                className="px-3.5 py-1.5 rounded-full bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Spawn Attenuated Child
@@ -362,23 +370,23 @@ export default function OperatorDashboard() {
                   <div
                     key={node.id}
                     onClick={() => setSelectedNode(node.id)}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                    className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
                       isRevoked
-                        ? "bg-slate-950/60 border-red-900/40 opacity-70"
+                        ? "bg-rose-50/50 border-rose-200 text-rose-950 opacity-80"
                         : isSelected
-                        ? "bg-slate-900/90 border-rose-500/50 shadow-md shadow-rose-950/20"
-                        : "bg-slate-900/50 border-slate-800/80 hover:border-slate-700"
+                        ? "bg-[#fffafa] border-rose-400 ring-2 ring-rose-100 shadow-md"
+                        : "bg-white border-rose-100 hover:border-rose-200 hover:shadow-sm"
                     }`}
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
                         <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center border ${
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-2xs ${
                             isRevoked
-                              ? "bg-red-950/30 border-red-800/50 text-red-400"
+                              ? "bg-rose-100 border-rose-300 text-rose-700"
                               : node.id === "root"
-                              ? "bg-rose-950/30 border-rose-800/50 text-rose-400"
-                              : "bg-blue-950/30 border-blue-800/50 text-blue-400"
+                              ? "bg-zinc-950 border-zinc-900 text-white"
+                              : "bg-rose-50 border-rose-200 text-rose-600"
                           }`}
                         >
                           {isRevoked ? (
@@ -389,32 +397,36 @@ export default function OperatorDashboard() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-sm text-white">
+                            <span className="font-bold text-sm text-zinc-950">
                               {node.name}
                             </span>
                             <span
-                              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+                              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-semibold ${
                                 isRevoked
-                                  ? "bg-red-500/10 text-red-400 border-red-500/20"
-                                  : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                  ? "bg-rose-100 text-rose-800 border-rose-300"
+                                  : "bg-emerald-50 text-emerald-700 border-emerald-200"
                               }`}
                             >
                               {node.status}
                             </span>
                           </div>
-                          <div className="text-xs text-slate-400 mt-0.5">{node.role}</div>
-                          <div className="text-[11px] font-mono text-slate-500 mt-1">
-                            Agent: {node.address}
+                          <div className="text-[11px] font-mono text-zinc-500 mt-1 flex items-center gap-1">
+                            <span>Address:</span>
+                            <span className="font-semibold text-zinc-800">
+                              {node.id === "root" && connectedAddress
+                                ? `${connectedAddress.slice(0, 6)}...${connectedAddress.slice(-4)} (Operator)`
+                                : node.address}
+                            </span>
                           </div>
                         </div>
                       </div>
 
                       <div className="text-right">
-                        <div className="text-sm font-mono font-bold text-slate-200">
+                        <div className="text-sm font-mono font-bold text-zinc-950">
                           ${node.idle.toLocaleString()}{" "}
-                          <span className="text-[10px] text-slate-400 font-sans">idle</span>
+                          <span className="text-[10px] text-zinc-500 font-sans font-normal">idle</span>
                         </div>
-                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                        <div className="text-[11px] text-zinc-500 font-mono mt-0.5">
                           Cap: ${node.usdCapPerCall}/call
                         </div>
                         {node.id !== "root" && !isRevoked && (
@@ -423,10 +435,10 @@ export default function OperatorDashboard() {
                               e.stopPropagation()
                               handleRevoke(node.id)
                             }}
-                            className="mt-2 text-[11px] px-2.5 py-1 rounded bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-400 transition-colors flex items-center gap-1 ml-auto"
+                            className="mt-2 text-[11px] px-2.5 py-1 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-700 transition-colors flex items-center gap-1 ml-auto font-medium"
                           >
-                            <ShieldAlert className="w-3 h-3" />
-                            Emergency Kill
+                            <ShieldAlert className="w-3 h-3 text-rose-600" />
+                            Quarantine (1-Tx)
                           </button>
                         )}
                       </div>
@@ -439,71 +451,73 @@ export default function OperatorDashboard() {
 
           {/* Node Inspector Panel */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <KeyRound className="w-4 h-4 text-rose-400" />
+            <h2 className="text-base sm:text-lg font-bold text-zinc-950 flex items-center gap-2">
+              <KeyRound className="w-4 h-4 text-rose-600" />
               Node Policy Inspector
             </h2>
 
-            <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-5 space-y-4">
+            <div className="rounded-2xl border border-rose-100/90 bg-white/95 p-5 space-y-4 shadow-sm">
               <div>
-                <div className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                <div className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider font-mono">
                   Target Mandate
                 </div>
-                <div className="text-base font-bold text-white mt-1">
+                <div className="text-base font-bold text-zinc-950 mt-1">
                   {activeNode.name}
                 </div>
-                <div className="text-xs font-mono text-slate-500">{activeNode.address}</div>
+                <div className="text-xs font-mono text-zinc-400 mt-0.5">{activeNode.address}</div>
               </div>
 
-              <div className="border-t border-slate-800/80 pt-4 space-y-3 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Status</span>
+              <div className="border-t border-rose-100/80 pt-4 space-y-3 text-xs">
+                <div className="flex justify-between py-1 border-b border-rose-50">
+                  <span className="text-zinc-600">Status</span>
                   <span
-                    className={`font-semibold ${
-                      activeNode.status === "REVOKED" ? "text-red-400" : "text-emerald-400"
+                    className={`font-semibold font-mono ${
+                      activeNode.status === "REVOKED" ? "text-rose-700" : "text-emerald-700"
                     }`}
                   >
                     {activeNode.status}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Total Granted</span>
-                  <span className="font-mono text-slate-200">${activeNode.granted}</span>
+                <div className="flex justify-between py-1 border-b border-rose-50">
+                  <span className="text-zinc-600">Total Granted</span>
+                  <span className="font-mono text-zinc-900 font-semibold">${activeNode.granted}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Current Idle</span>
-                  <span className="font-mono text-slate-200">${activeNode.idle}</span>
+                <div className="flex justify-between py-1 border-b border-rose-50">
+                  <span className="text-zinc-600">Current Idle</span>
+                  <span className="font-mono text-zinc-900 font-semibold">${activeNode.idle}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Child Granted</span>
-                  <span className="font-mono text-slate-200">${activeNode.childGranted}</span>
+                <div className="flex justify-between py-1 border-b border-rose-50">
+                  <span className="text-zinc-600">Child Granted</span>
+                  <span className="font-mono text-zinc-900 font-semibold">${activeNode.childGranted}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Job Escrow Locked</span>
-                  <span className="font-mono text-slate-200">${activeNode.jobLocked}</span>
+                <div className="flex justify-between py-1 border-b border-rose-50">
+                  <span className="text-zinc-600">Job Escrow Locked</span>
+                  <span className="font-mono text-zinc-900 font-semibold">${activeNode.jobLocked}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">FTSOv2 USD Limit</span>
-                  <span className="font-mono text-rose-400 font-semibold">
+                <div className="flex justify-between py-1">
+                  <span className="text-zinc-600">FTSOv2 USD Limit</span>
+                  <span className="font-mono text-rose-700 font-bold">
                     ${activeNode.usdCapPerCall} / call
                   </span>
                 </div>
               </div>
 
-              <div className="border-t border-slate-800/80 pt-4">
-                <div className="text-xs text-slate-400 mb-2">Onchain Guarantees</div>
-                <div className="bg-slate-950/60 rounded-lg p-3 border border-slate-800/60 space-y-1 text-[11px] text-slate-400">
-                  <div className="flex items-center gap-1.5 text-slate-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    ERC-8004 Soulbound Verified
+              <div className="border-t border-rose-100/80 pt-4">
+                <div className="text-xs font-semibold text-zinc-700 mb-2 font-mono uppercase tracking-wider">
+                  Onchain Guarantees
+                </div>
+                <div className="rounded-xl border border-rose-100 bg-[#fffbfc] p-3 space-y-2 text-xs text-zinc-700">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>ERC-8004 Machine Credential Bound</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-slate-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    Fail-Closed on Subtree Revocation
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Fail-Closed on Subtree Quarantine</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-slate-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    Block-Latency FTSOv2 Staleness Check
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Sub-Second FTSOv2 Staleness Check</span>
                   </div>
                 </div>
               </div>
@@ -513,41 +527,41 @@ export default function OperatorDashboard() {
 
         {/* Active Jobs Escrow (ERC-8183) Section */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-            <Shield className="w-4 h-4 text-rose-400" />
-            Conditional Job Escrow (ERC-8183)
+          <h2 className="text-base sm:text-lg font-bold text-zinc-950 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-rose-600" />
+            Conditional Job Escrow (ERC-8183 Rails)
           </h2>
 
-          <div className="bg-slate-900/50 border border-slate-800/80 rounded-xl overflow-hidden">
+          <div className="rounded-2xl border border-rose-100/90 bg-white/95 overflow-hidden shadow-sm">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950/80 text-slate-400 uppercase tracking-wider font-mono border-b border-slate-800">
+              <thead className="bg-[#fffafa] text-zinc-600 uppercase tracking-wider font-mono border-b border-rose-100">
                 <tr>
-                  <th className="py-3 px-4">Job ID</th>
-                  <th className="py-3 px-4">Mandate</th>
-                  <th className="py-3 px-4">Amount</th>
-                  <th className="py-3 px-4">Provider</th>
-                  <th className="py-3 px-4">Evaluator</th>
-                  <th className="py-3 px-4">Deadline</th>
-                  <th className="py-3 px-4 text-right">Status</th>
+                  <th className="py-3.5 px-4 font-semibold">Job ID</th>
+                  <th className="py-3.5 px-4 font-semibold">Mandate</th>
+                  <th className="py-3.5 px-4 font-semibold">Amount</th>
+                  <th className="py-3.5 px-4 font-semibold">Provider</th>
+                  <th className="py-3.5 px-4 font-semibold">Evaluator</th>
+                  <th className="py-3.5 px-4 font-semibold">Deadline</th>
+                  <th className="py-3.5 px-4 text-right font-semibold">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-sans">
+              <tbody className="divide-y divide-rose-50 font-sans">
                 {jobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-slate-800/20 transition-colors">
-                    <td className="py-3 px-4 font-mono text-slate-300">{job.id}</td>
-                    <td className="py-3 px-4 font-medium text-white">{job.mandateName}</td>
-                    <td className="py-3 px-4 font-mono font-semibold text-rose-400">
+                  <tr key={job.id} className="hover:bg-rose-50/30 transition-colors">
+                    <td className="py-3.5 px-4 font-mono font-medium text-zinc-700">{job.id}</td>
+                    <td className="py-3.5 px-4 font-semibold text-zinc-950">{job.mandateName}</td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-rose-700">
                       ${job.amount}
                     </td>
-                    <td className="py-3 px-4 text-slate-400 font-mono">{job.provider}</td>
-                    <td className="py-3 px-4 text-slate-300">{job.evaluator}</td>
-                    <td className="py-3 px-4 text-slate-400">{job.deadline}</td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3.5 px-4 text-zinc-500 font-mono">{job.provider}</td>
+                    <td className="py-3.5 px-4 text-zinc-700">{job.evaluator}</td>
+                    <td className="py-3.5 px-4 text-zinc-500">{job.deadline}</td>
+                    <td className="py-3.5 px-4 text-right">
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-mono border ${
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${
                           job.status === "COMPLETED"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-amber-50 text-amber-700 border-amber-200"
                         }`}
                       >
                         {job.status}
@@ -563,24 +577,24 @@ export default function OperatorDashboard() {
 
       {/* Spawn Child Agent Modal */}
       {isSpawning && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-sm p-4">
+          <div className="bg-white border border-rose-200 rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Bot className="w-5 h-5 text-rose-400" />
+              <h3 className="text-base font-bold text-zinc-950 flex items-center gap-2">
+                <Bot className="w-5 h-5 text-rose-600" />
                 Spawn Attenuated Child Agent
               </h3>
               <button
                 onClick={() => setIsSpawning(false)}
-                className="text-slate-400 hover:text-white text-xs"
+                className="text-zinc-400 hover:text-zinc-700 rounded-lg p-1"
               >
-                Cancel
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSpawn} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-400 font-medium mb-1">
+                <label className="block text-zinc-700 font-semibold mb-1 font-mono uppercase tracking-wider text-[11px]">
                   Agent Identifier / Name
                 </label>
                 <input
@@ -589,12 +603,12 @@ export default function OperatorDashboard() {
                   placeholder="e.g. SparkDEX Liquidity Bot"
                   value={spawnAgentName}
                   onChange={(e) => setSpawnAgentName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-rose-500"
+                  className="w-full bg-[#faf8f7] border border-zinc-200 rounded-xl px-3 py-2.5 text-zinc-900 focus:outline-none focus:border-rose-500"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 font-medium mb-1">
+                <label className="block text-zinc-700 font-semibold mb-1 font-mono uppercase tracking-wider text-[11px]">
                   Granted Budget ($ USDC)
                 </label>
                 <input
@@ -604,15 +618,15 @@ export default function OperatorDashboard() {
                   max={rootNode.idle}
                   value={spawnAmount}
                   onChange={(e) => setSpawnAmount(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-rose-500"
+                  className="w-full bg-[#faf8f7] border border-zinc-200 rounded-xl px-3 py-2.5 text-zinc-900 font-mono focus:outline-none focus:border-rose-500"
                 />
-                <div className="text-[11px] text-slate-500 mt-1">
+                <div className="text-[11px] text-zinc-500 mt-1">
                   Max available from Root idle: ${rootNode.idle.toLocaleString()}
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 font-medium mb-1">
+                <label className="block text-zinc-700 font-semibold mb-1 font-mono uppercase tracking-wider text-[11px]">
                   FTSOv2 Spend Cap ($ / call)
                 </label>
                 <input
@@ -621,9 +635,9 @@ export default function OperatorDashboard() {
                   min="5"
                   value={spawnUsdCap}
                   onChange={(e) => setSpawnUsdCap(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-rose-500"
+                  className="w-full bg-[#faf8f7] border border-zinc-200 rounded-xl px-3 py-2.5 text-zinc-900 font-mono focus:outline-none focus:border-rose-500"
                 />
-                <div className="text-[11px] text-slate-500 mt-1">
+                <div className="text-[11px] text-zinc-500 mt-1">
                   Reverts onchain if oracle price implies spend &gt; limit
                 </div>
               </div>
@@ -631,7 +645,7 @@ export default function OperatorDashboard() {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold transition-colors shadow-sm"
+                  className="w-full py-3 rounded-full bg-zinc-950 hover:bg-zinc-800 text-white font-semibold transition-colors shadow-sm text-xs"
                 >
                   Confirm &amp; Spawn Mandate
                 </button>
