@@ -126,38 +126,4 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: dark;
-}
-
-/* KYA Protocol Branding Utilities */
-.kya-glass {
-  background: rgba(18, 18, 22, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.kya-glass-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.kya-glass-hover:hover {
-  background: rgba(28, 28, 35, 0.85);
-  border-color: rgba(232, 65, 66, 0.35);
-  box-shadow: 0 8px 32px -4px rgba(232, 65, 66, 0.12);
-}
-
-.kya-glow-coral {
-  box-shadow: 0 0 35px -5px rgba(232, 65, 66, 0.3);
-}
-
-.kya-glow-violet {
-  box-shadow: 0 0 35px -5px rgba(139, 92, 246, 0.25);
-}
-
-.kya-coral-gradient {
-  background: linear-gradient(135deg, #e84142 0%, #ff6b6c 50%, #991b1b 100%);
-}
-
-.kya-violet-gradient {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #6d28d9 100%);
 }

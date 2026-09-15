@@ -15,15 +15,15 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "KYA Network | On-chain authorization for AI agents",
-  description: "Give autonomous AI agents controlled access to capital without unrestricted treasury control.",
-    generator: 'v0.app'
+  title: "KYA by Mandant | The Financial Firewall for Autonomous AI on Flare",
+  description: "Bounded capital, real-time USD policy limits via FTSOv2, and proof-verified settlement via FDC — enforced onchain by Flare.",
+  generator: "v0.app",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`dark ${geistSans.variable} ${geistMono.variable}`}>
-      <body className="font-sans bg-[#09090b] text-[#f4f4f5] antialiased selection:bg-[#e84142]/30 selection:text-[#ff8a8c]">{children}</body>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="font-sans bg-background text-foreground antialiased">{children}</body>
     </html>
   )
 }
