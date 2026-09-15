@@ -19,6 +19,7 @@ import { MandateNodeComponent, MandateNodeData } from "@/components/demo/dag-nod
 import { InspectorDrawer } from "@/components/demo/inspector-drawer"
 import { EventStream, EventLogItem } from "@/components/demo/event-stream"
 import { IntegrityModal } from "@/components/demo/integrity-modal"
+import { WalletButton } from "@/components/wallet/wallet-button"
 import {
   Shield,
   ArrowLeft,
@@ -165,53 +166,69 @@ export default function DemoPage() {
   const selectedNode = nodes.find((n) => n.id === selectedNodeId)?.data as MandateNodeData | null
 
   return (
-    <div className="flex h-screen w-screen flex-col bg-slate-50 text-slate-900 overflow-hidden font-sans">
+    <div className="flex h-screen w-screen flex-col bg-[#fff8f7] text-zinc-900 overflow-hidden font-sans">
       {/* Top Application Bar */}
-      <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 shrink-0 shadow-xs z-20">
+      <header className="flex h-14 items-center justify-between border-b border-rose-100 bg-white/90 px-4 shrink-0 shadow-2xs z-20">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 transition"
+            className="flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition shadow-2xs"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Landing</span>
           </Link>
-          <div className="h-4 w-[1px] bg-slate-200" />
+          <div className="h-4 w-[1px] bg-rose-100" />
           <div className="flex items-center gap-2">
-            <div className="grid h-6 w-6 place-items-center rounded-full bg-rose-600 text-white font-bold text-xs">
+            <div className="grid h-6 w-6 place-items-center rounded-full bg-rose-500 text-white font-bold text-xs shadow-xs">
               ✺
             </div>
-            <h1 className="text-sm font-semibold text-slate-900 tracking-tight">
-              KYA Network <span className="text-slate-600 font-normal">| Operator Command Center</span>
-            </h1>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-extrabold tracking-tight text-zinc-950 text-sm">KYA</span>
+              <span className="text-[11px] font-medium text-zinc-500">by Mandant</span>
+              <span className="text-zinc-400 font-normal text-xs hidden sm:inline">| DAG Visualizer</span>
+            </div>
           </div>
         </div>
 
         {/* Network & Invariant Status */}
         <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50/80 px-3 py-1 text-[11px] font-medium text-rose-800">
-            <span className="h-2 w-2 rounded-full bg-rose-600 animate-pulse" />
-            <span>FLARE COSTON2 · FTSOv2 & FDC LIVE</span>
+          <div className="hidden lg:flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-800">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span>COSTON2 (114)</span>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-800">
+          <div
+            className="hidden xl:flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 bg-zinc-100 text-zinc-400 cursor-not-allowed select-none"
+            title="Flare Mainnet is disabled pending final security audit"
+          >
+            <Lock className="w-2.5 h-2.5 text-zinc-400" />
+            <span>Mainnet: Disabled</span>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-[11px] font-semibold text-zinc-800">
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
             <span className="hidden md:inline">CONSERVATION:</span>
             <span>IDLE + LOCKED = GRANTED</span>
           </div>
 
+          {/* Web3 Wallet Integration */}
+          <WalletButton />
+
           <button
             onClick={() => setIsIntegrityModalOpen(true)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 transition shadow-2xs"
+            className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100/70 transition shadow-2xs"
           >
-            <Download className="h-3.5 w-3.5 text-slate-500" />
+            <Download className="h-3.5 w-3.5 text-emerald-600" />
             <span className="hidden sm:inline">Integrity Pack</span>
           </button>
 
           <button
             onClick={handleReset}
             disabled={isLoading}
-            className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1.5 text-xs text-slate-600 hover:bg-slate-50 transition"
+            className="flex items-center gap-1 rounded-full border border-zinc-200 bg-white p-1.5 text-xs text-zinc-600 hover:bg-zinc-50 transition shadow-2xs"
             title="Reset Tree"
           >
             <RotateCcw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
@@ -220,7 +237,7 @@ export default function DemoPage() {
       </header>
 
       {/* Scenario Switcher Toolbar */}
-      <div className="flex items-center justify-between border-b border-slate-200 bg-white/95 px-4 py-2 shrink-0 z-10 overflow-x-auto">
+      <div className="flex items-center justify-between border-b border-rose-100 bg-[#fffafa] px-4 py-2 shrink-0 z-10 overflow-x-auto">
         <div className="flex items-center gap-2 text-xs shrink-0">
           <span className="font-semibold text-slate-500 uppercase tracking-wider text-[10px] mr-1">
             Scenarios:
