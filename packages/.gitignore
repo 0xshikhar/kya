@@ -1,0 +1,46 @@
+# fsa-operator
+/fsa-operator/node_modules
+
+#mcp-server
+/mcp-server/node_modules
+
+#relayer
+/relayer/node_modules
+
+#sdk
+/sdk/node_modules
+/sdk/dist
+
+#templates
+/templates/vault-copilot/node_modules
+/templates/vault-copilot/dist
+/templates/vault-frontend/node_modules
+/templates/vault-frontend/dist
+/templates/vault-backend/node_modules
+/templates/vault-backend/dist
+
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
