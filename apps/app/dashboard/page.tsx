@@ -25,6 +25,8 @@ import {
 } from "lucide-react"
 import { WalletButton } from "@/components/wallet/wallet-button"
 import { useWallet } from "@/hooks/use-wallet"
+import { FtsoTelemetryCard } from "@/components/oracle/ftso-telemetry"
+import { ContractHubButton } from "@/components/contracts/contract-hub-modal"
 
 interface NodeData {
   id: string
@@ -271,6 +273,9 @@ export default function OperatorDashboard() {
             {/* Live Web3 Wallet Connection */}
             <WalletButton />
 
+            {/* Verified Contracts Modal Button */}
+            <ContractHubButton />
+
             <Link
               href="/demo"
               className="text-xs px-3 py-1.5 rounded-full border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 transition-colors flex items-center gap-1.5 shadow-xs font-medium"
@@ -343,6 +348,9 @@ export default function OperatorDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Live Flare FTSOv2 Oracle Telemetry */}
+        <FtsoTelemetryCard />
 
         {/* Hierarchy Management Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

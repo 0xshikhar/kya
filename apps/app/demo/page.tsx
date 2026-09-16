@@ -20,6 +20,8 @@ import { InspectorDrawer } from "@/components/demo/inspector-drawer"
 import { EventStream, EventLogItem } from "@/components/demo/event-stream"
 import { IntegrityModal } from "@/components/demo/integrity-modal"
 import { WalletButton } from "@/components/wallet/wallet-button"
+import { FtsoHeaderBadge } from "@/components/oracle/ftso-telemetry"
+import { ContractHubButton } from "@/components/contracts/contract-hub-modal"
 import {
   Shield,
   ArrowLeft,
@@ -214,8 +216,14 @@ export default function DemoPage() {
             <span>IDLE + LOCKED = GRANTED</span>
           </div>
 
+          {/* Live FTSOv2 Oracle Ticker Badge */}
+          <FtsoHeaderBadge />
+
           {/* Web3 Wallet Integration */}
           <WalletButton />
+
+          {/* Verified Coston2 Contracts Hub */}
+          <ContractHubButton />
 
           <button
             onClick={() => setIsIntegrityModalOpen(true)}
