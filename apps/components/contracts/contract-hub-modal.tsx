@@ -167,9 +167,14 @@ export function ContractHubModal({ isOpen, onClose }: ContractHubModalProps) {
     setTimeout(() => setCopiedAll(false), 2000)
   }
 
-  if (!isOpen) return null
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-  return (
+  if (!isOpen || !mounted) return null
+
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/40 backdrop-blur-xs animate-in fade-in duration-150">
       <div className="w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl border border-rose-100 bg-white shadow-2xl overflow-hidden font-sans">
         {/* Header */}
@@ -221,11 +226,10 @@ export function ContractHubModal({ isOpen, onClose }: ContractHubModalProps) {
               <button
                 key={layer}
                 onClick={() => setSelectedLayer(layer)}
-                className={`px-3 py-1 rounded-full font-mono text-[11px] font-semibold transition ${
-                  selectedLayer === layer
-                    ? "bg-zinc-950 text-white shadow-2xs"
-                    : "bg-zinc-50 text-zinc-600 hover:bg-zinc-100 border border-zinc-200/80"
-                }`}
+                className={`px-3 py-1 rounded-full font-mono text-[11px] font-semibold transition ${selectedLayer === layer
+                  ? "bg-zinc-950 text-white shadow-2xs"
+                  : "bg-zinc-50 text-zinc-600 hover:bg-zinc-100 border border-zinc-200/80"
+                  }`}
               >
                 {layer === "ALL" ? "All (10)" : layer}
               </button>
@@ -328,7 +332,8 @@ export function ContractHubModal({ isOpen, onClose }: ContractHubModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
@@ -339,12 +344,14 @@ export function ContractHubButton() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 rounded-full border border-rose-200/90 bg-white hover:bg-rose-50/70 text-zinc-800 px-3 py-1.5 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all hover:border-rose-300"
+        className="flex items-center gap-1.5 h-8.5 rounded-full border border-zinc-200/90 bg-white hover:bg-zinc-50 text-zinc-700 px-3 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all hover:border-zinc-300 active:scale-95"
         title="View all 10 verified smart contracts on Flare Coston2"
       >
-        <FileCode2 className="h-3.5 w-3.5 text-rose-600" />
+        <FileCode2 className="h-3.5 w-3.5 text-rose-500" />
         <span className="hidden sm:inline">Contracts</span>
-        <span className="text-[10px] bg-rose-50 text-rose-700 font-mono px-1 rounded font-bold">10</span>
+        <span className="text-[10px] bg-rose-50 text-rose-700 border border-rose-100/80 font-mono px-1.5 py-0.2 rounded-full font-bold">
+          10
+        </span>
       </button>
 
       <ContractHubModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
