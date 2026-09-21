@@ -27,6 +27,8 @@ import { WalletButton } from "@/components/wallet/wallet-button"
 import { useWallet } from "@/hooks/use-wallet"
 import { FtsoTelemetryCard } from "@/components/oracle/ftso-telemetry"
 import { ContractHubButton } from "@/components/contracts/contract-hub-modal"
+import { NetworkBadge } from "@/components/navigation/network-badge"
+import { VaultCopilotModal } from "@/components/copilot/vault-copilot-modal"
 
 interface NodeData {
   id: string
@@ -55,6 +57,7 @@ export default function OperatorDashboard() {
   const { address: connectedAddress, isConnected, balance: walletBalance } = useWallet()
   const [selectedNode, setSelectedNode] = useState<string>("root")
   const [isSpawning, setIsSpawning] = useState(false)
+  const [isCopilotModalOpen, setIsCopilotModalOpen] = useState(false)
   const [spawnAgentName, setSpawnAgentName] = useState("")
   const [spawnAmount, setSpawnAmount] = useState("1000")
   const [spawnUsdCap, setSpawnUsdCap] = useState("50")
@@ -231,10 +234,11 @@ export default function OperatorDashboard() {
 
   return (
     <div className="min-h-screen bg-[#fff8f7] text-zinc-950 font-sans selection:bg-rose-500/20">
-      {/* Top Navigation */}
-      <header className="border-b border-rose-100 bg-white/85 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      {/* Top Navigation Bar */}
+      <header className="border-b border-rose-100/80 bg-white/90 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+          {/* Left: Brand + Navigation Mode Switcher */}
+          <div className="flex items-center gap-3 md:gap-5">
             <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
               <div className="grid h-7 w-7 place-items-center rounded-full bg-rose-500 text-white text-xs font-semibold shadow-sm">
                 {"✺"}
@@ -245,52 +249,46 @@ export default function OperatorDashboard() {
               </div>
             </Link>
 
-            <span className="hidden sm:inline-flex text-[11px] px-2.5 py-0.5 rounded-full font-mono bg-rose-50 text-rose-700 border border-rose-200 font-semibold">
-              OPERATOR COMMAND CENTER
-            </span>
+            <span className="text-zinc-300 hidden sm:inline select-none">/</span>
+
+            {/* View Switcher: Dashboard & DAG Visualizer */}
+            <nav className="flex items-center p-0.5 rounded-full bg-zinc-100/90 border border-zinc-200/70 text-xs shadow-2xs">
+              <span className="px-3 py-1 rounded-full bg-white text-zinc-900 font-semibold shadow-xs">
+                Dashboard
+              </span>
+              <Link
+                href="/demo"
+                className="px-3 py-1 rounded-full text-zinc-600 hover:text-zinc-950 font-medium transition-colors flex items-center gap-1.5"
+              >
+                <Terminal className="w-3 h-3 text-zinc-400" />
+                <span className="hidden sm:inline">DAG Visualizer</span>
+                <span className="sm:hidden">DAG</span>
+              </Link>
+            </nav>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Network Indicator - Coston2 Live, Flare Mainnet Disabled */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50/90 px-3 py-1 text-xs font-semibold text-emerald-900 shadow-2xs">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                </span>
-                <span>Flare Coston2 (114)</span>
-              </div>
-
-              <div
-                className="hidden md:flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded-full border border-zinc-200/80 bg-zinc-100/70 text-zinc-400 cursor-not-allowed select-none"
-                title="Flare Mainnet is disabled pending final security audit"
-              >
-                <Lock className="w-2.5 h-2.5 text-zinc-400" />
-                <span>Flare Main: Disabled</span>
-              </div>
-            </div>
-
-            {/* Live Web3 Wallet Connection */}
-            <WalletButton />
-
+          {/* Right: Tools & Web3 State */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Verified Contracts Modal Button */}
             <ContractHubButton />
 
-            <Link
-              href="/demo"
-              className="text-xs px-3 py-1.5 rounded-full border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 transition-colors flex items-center gap-1.5 shadow-xs font-medium"
-            >
-              <Terminal className="w-3.5 h-3.5 text-rose-600" />
-              <span className="hidden sm:inline">DAG Visualizer</span>
-            </Link>
-
+            {/* Export Audit Pack */}
             <button
               onClick={exportIntegrityPack}
-              className="text-xs px-3 py-1.5 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100/80 transition-all flex items-center gap-1.5 font-medium shadow-xs"
+              className="flex items-center gap-1.5 h-8.5 rounded-full border border-zinc-200/90 bg-white hover:bg-zinc-50 text-zinc-700 px-3 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all hover:border-zinc-300 active:scale-95"
+              title="Download cryptographic audit pack and state proof bundle"
             >
-              <Download className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="hidden sm:inline">Integrity Pack</span>
+              <Download className="w-3.5 h-3.5 text-zinc-500" />
+              <span className="hidden md:inline">Integrity Pack</span>
             </button>
+
+            <div className="h-4 w-px bg-zinc-200/80 hidden sm:block mx-0.5" />
+
+            {/* Network Telemetry Badge with Popover */}
+            <NetworkBadge />
+
+            {/* Live Web3 Wallet Connection */}
+            <WalletButton />
           </div>
         </div>
       </header>
@@ -438,16 +436,32 @@ export default function OperatorDashboard() {
                           Cap: ${node.usdCapPerCall}/call
                         </div>
                         {node.id !== "root" && !isRevoked && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleRevoke(node.id)
-                            }}
-                            className="mt-2 text-[11px] px-2.5 py-1 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-700 transition-colors flex items-center gap-1 ml-auto font-medium"
-                          >
-                            <ShieldAlert className="w-3 h-3 text-rose-600" />
-                            Quarantine (1-Tx)
-                          </button>
+                          <div className="flex items-center gap-1.5 justify-end mt-2">
+                            {(node.id === "node-1" || node.id === "copilot" || node.name.includes("FAssets Vault Copilot")) && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setIsCopilotModalOpen(true)
+                                }}
+                                className="text-[11px] px-2.5 py-1 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 transition-colors flex items-center gap-1 font-medium"
+                                title="Inspect FAssets Collateral Ratio (CR) Protection Policy"
+                              >
+                                <Shield className="w-3 h-3 text-rose-600" />
+                                <span>Inspect Policy</span>
+                              </button>
+                            )}
+
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleRevoke(node.id)
+                              }}
+                              className="text-[11px] px-2.5 py-1 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-700 transition-colors flex items-center gap-1 font-medium"
+                            >
+                              <ShieldAlert className="w-3 h-3 text-rose-600" />
+                              Quarantine (1-Tx)
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -528,6 +542,30 @@ export default function OperatorDashboard() {
                     <span>Sub-Second FTSOv2 Staleness Check</span>
                   </div>
                 </div>
+
+                {(activeNode.id === "node-1" || activeNode.id === "copilot" || activeNode.name.includes("FAssets Vault Copilot")) && (
+                  <div className="rounded-xl border border-rose-200 bg-rose-50/70 p-3 space-y-2 text-xs mt-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-zinc-950 flex items-center gap-1.5">
+                        <Bot className="w-3.5 h-3.5 text-rose-600" />
+                        <span>FAssets Vault Copilot</span>
+                      </span>
+                      <span className="font-mono text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full">
+                        525% CR Target
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-zinc-600 leading-snug">
+                      Autonomous collateral top-up template. Rebalances FAssets vault while bounded by $200/call FTSOv2 spend limit.
+                    </p>
+                    <button
+                      onClick={() => setIsCopilotModalOpen(true)}
+                      className="w-full mt-1 py-1.5 px-3 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-xs"
+                    >
+                      <span>Open Full Policy Inspector</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -662,6 +700,11 @@ export default function OperatorDashboard() {
           </div>
         </div>
       )}
+      {/* FAssets Vault Copilot Policy Modal */}
+      <VaultCopilotModal
+        isOpen={isCopilotModalOpen}
+        onClose={() => setIsCopilotModalOpen(false)}
+      />
     </div>
   )
 }
