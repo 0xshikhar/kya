@@ -93,9 +93,9 @@ export function WalletButton() {
         <button
           onClick={handleConnectClick}
           disabled={isConnecting}
-          className="group flex items-center gap-2 rounded-full border border-rose-200 bg-white hover:bg-rose-50/70 text-zinc-900 px-3.5 py-1.5 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all hover:border-rose-300"
+          className="group flex items-center gap-2 h-8.5 rounded-full bg-zinc-950 hover:bg-zinc-800 text-white px-3.5 text-xs font-semibold shadow-xs hover:shadow transition-all active:scale-95"
         >
-          <Wallet className="h-3.5 w-3.5 text-rose-600 transition-transform group-hover:scale-110" />
+          <Wallet className="h-3.5 w-3.5 text-rose-400 transition-transform group-hover:scale-110" />
           <span>{isConnecting ? "Connecting..." : "Connect Wallet"}</span>
         </button>
 
@@ -181,7 +181,7 @@ export function WalletButton() {
       <button
         onClick={switchToCoston2}
         disabled={isSwitchingChain}
-        className="flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors animate-pulse"
+        className="flex items-center gap-1.5 h-8.5 rounded-full border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 px-3 text-xs font-semibold shadow-xs transition-colors animate-pulse"
         title="KYA requires Flare Coston2 Testnet (Chain ID 114). Flare Mainnet is disabled."
       >
         <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
@@ -197,7 +197,7 @@ export function WalletButton() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-2 rounded-full border border-rose-100 bg-white hover:bg-[#faf7f7] px-3 py-1.5 text-xs font-semibold text-zinc-900 shadow-2xs hover:shadow-xs transition-all"
+        className="flex items-center gap-2 h-8.5 rounded-full border border-zinc-200/90 bg-white hover:bg-zinc-50 px-3 text-xs font-semibold text-zinc-900 shadow-2xs hover:shadow-xs transition-all"
       >
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -205,13 +205,13 @@ export function WalletButton() {
         </span>
 
         {balance && (
-          <span className="hidden sm:inline font-mono text-zinc-600 text-[11px] font-normal border-r border-rose-100 pr-2">
+          <span className="hidden sm:inline font-mono text-zinc-500 text-[11px] font-normal border-r border-zinc-200 pr-2">
             {balance}
           </span>
         )}
 
         <span className="font-mono text-zinc-900">{shortAddr}</span>
-        <ChevronDown className={`h-3 w-3 text-zinc-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className={`h-3 w-3 text-zinc-400 transition-transform duration-150 ${dropdownOpen ? "rotate-180" : ""}`} />
       </button>
 
       {/* Account Info Dropdown */}
