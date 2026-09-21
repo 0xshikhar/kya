@@ -12,7 +12,13 @@ export interface EventLogItem {
   timestamp: string
 }
 
-export function EventStream({ logs }: { logs: EventLogItem[] }) {
+export function EventStream({
+  logs,
+  onInspectFdcProof,
+}: {
+  logs: EventLogItem[]
+  onInspectFdcProof?: () => void
+}) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -63,6 +69,20 @@ export function EventStream({ logs }: { logs: EventLogItem[] }) {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
+              {onInspectFdcProof &&
+                (log.title.includes("FDC") ||
+                  log.details.includes("FDC") ||
+                  log.title.includes("XRPL") ||
+                  log.details.includes("XRPL")) && (
+                  <button
+                    onClick={onInspectFdcProof}
+                    className="text-[10px] px-2 py-0.5 rounded-full bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-sans font-medium flex items-center gap-1 transition"
+                    title="Inspect Flare Data Connector (FDC) cryptographic Merkle proof and voting round"
+                  >
+                    <Shield className="h-2.5 w-2.5 text-purple-600" />
+                    <span>Inspect FDC Proof</span>
+                  </button>
+                )}
               <span className="text-slate-400 text-[10px]">{log.timestamp}</span>
               <a
                 href={`https://coston2-explorer.flare.network/tx/${log.txHash}`}

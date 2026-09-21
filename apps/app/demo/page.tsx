@@ -19,11 +19,15 @@ import { MandateNodeComponent, MandateNodeData } from "@/components/demo/dag-nod
 import { InspectorDrawer } from "@/components/demo/inspector-drawer"
 import { EventStream, EventLogItem } from "@/components/demo/event-stream"
 import { IntegrityModal } from "@/components/demo/integrity-modal"
+import { FdcProofModal } from "@/components/demo/fdc-proof-modal"
 import { WalletButton } from "@/components/wallet/wallet-button"
 import { FtsoHeaderBadge } from "@/components/oracle/ftso-telemetry"
 import { ContractHubButton } from "@/components/contracts/contract-hub-modal"
+import { NetworkBadge } from "@/components/navigation/network-badge"
 import {
   Shield,
+  ShieldCheck,
+  FileCode2,
   ArrowLeft,
   Play,
   RotateCcw,
@@ -34,6 +38,7 @@ import {
   Sparkles,
   Zap,
   ExternalLink,
+  Terminal,
 } from "lucide-react"
 
 const nodeTypes = {
@@ -48,6 +53,7 @@ export default function DemoPage() {
   const [logs, setLogs] = useState<EventLogItem[]>([])
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [isIntegrityModalOpen, setIsIntegrityModalOpen] = useState(false)
+  const [isFdcModalOpen, setIsFdcModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [activeScenario, setActiveScenario] = useState<string | null>(null)
   const [statusMessage, setStatusMessage] = useState<string>("")
@@ -107,6 +113,9 @@ export default function DemoPage() {
           setIsConserved(data.graph.isConserved)
           setLogs(data.graph.events)
         }
+        if (path === "path4") {
+          setIsFdcModalOpen(true)
+        }
       }
     } catch (err: any) {
       console.error("Execution failed:", err)
@@ -165,82 +174,87 @@ export default function DemoPage() {
     }
   }
 
-  const selectedNode = nodes.find((n) => n.id === selectedNodeId)?.data as MandateNodeData | null
+  const selectedNode = (nodes.find((n) => n.id === selectedNodeId)?.data as unknown as MandateNodeData) || null
 
   return (
     <div className="flex h-screen w-screen flex-col bg-[#fff8f7] text-zinc-900 overflow-hidden font-sans">
       {/* Top Application Bar */}
-      <header className="flex h-14 items-center justify-between border-b border-rose-100 bg-white/90 px-4 shrink-0 shadow-2xs z-20">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition shadow-2xs"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Landing</span>
-          </Link>
-          <div className="h-4 w-[1px] bg-rose-100" />
-          <div className="flex items-center gap-2">
-            <div className="grid h-6 w-6 place-items-center rounded-full bg-rose-500 text-white font-bold text-xs shadow-xs">
+      <header className="flex h-16 items-center justify-between border-b border-rose-100/80 bg-white/90 px-4 sm:px-6 shrink-0 shadow-2xs z-20 gap-4">
+        {/* Left: Brand & Navigation Mode Switcher */}
+        <div className="flex items-center gap-3 md:gap-5">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+            <div className="grid h-7 w-7 place-items-center rounded-full bg-rose-500 text-white font-bold text-xs shadow-sm">
               ✺
             </div>
             <div className="flex items-baseline gap-1.5">
-              <span className="font-extrabold tracking-tight text-zinc-950 text-sm">KYA</span>
-              <span className="text-[11px] font-medium text-zinc-500">by Mandant</span>
-              <span className="text-zinc-400 font-normal text-xs hidden sm:inline">| DAG Visualizer</span>
+              <span className="font-bold tracking-tight text-zinc-950 text-base">KYA</span>
+              <span className="text-xs font-medium text-zinc-500">by Mandant</span>
             </div>
-          </div>
+          </Link>
+
+          <span className="text-zinc-300 hidden sm:inline select-none">/</span>
+
+          {/* View Switcher: Dashboard & DAG Visualizer */}
+          <nav className="flex items-center p-0.5 rounded-full bg-zinc-100/90 border border-zinc-200/70 text-xs shadow-2xs">
+            <Link
+              href="/dashboard"
+              className="px-3 py-1 rounded-full text-zinc-600 hover:text-zinc-950 font-medium transition-colors"
+            >
+              Dashboard
+            </Link>
+            <span className="px-3 py-1 rounded-full bg-white text-zinc-950 font-semibold shadow-xs flex items-center gap-1.5">
+              <Terminal className="w-3 h-3 text-rose-500" />
+              <span className="hidden sm:inline">DAG Visualizer</span>
+              <span className="sm:hidden">DAG</span>
+            </span>
+          </nav>
         </div>
 
-        {/* Network & Invariant Status */}
-        <div className="flex items-center gap-2">
-          <div className="hidden lg:flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-800">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <span>COSTON2 (114)</span>
-          </div>
-
-          <div
-            className="hidden xl:flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 bg-zinc-100 text-zinc-400 cursor-not-allowed select-none"
-            title="Flare Mainnet is disabled pending final security audit"
-          >
-            <Lock className="w-2.5 h-2.5 text-zinc-400" />
-            <span>Mainnet: Disabled</span>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-[11px] font-semibold text-zinc-800">
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-            <span className="hidden md:inline">CONSERVATION:</span>
-            <span>IDLE + LOCKED = GRANTED</span>
-          </div>
-
+        {/* Right: Telemetry, Tools & Web3 State */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
           {/* Live FTSOv2 Oracle Ticker Badge */}
           <FtsoHeaderBadge />
-
-          {/* Web3 Wallet Integration */}
-          <WalletButton />
 
           {/* Verified Coston2 Contracts Hub */}
           <ContractHubButton />
 
+          {/* FDC Attestation Proof Inspector Button */}
           <button
-            onClick={() => setIsIntegrityModalOpen(true)}
-            className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100/70 transition shadow-2xs"
+            onClick={() => setIsFdcModalOpen(true)}
+            className="flex items-center gap-1.5 h-8.5 rounded-full border border-purple-200/90 bg-purple-50/80 hover:bg-purple-100 text-purple-800 px-3 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all hover:border-purple-300 active:scale-95"
+            title="Inspect Flare Data Connector (FDC) cryptographic Merkle proof, voting round & XRPL settlement verification"
           >
-            <Download className="h-3.5 w-3.5 text-emerald-600" />
-            <span className="hidden sm:inline">Integrity Pack</span>
+            <ShieldCheck className="h-3.5 w-3.5 text-purple-600" />
+            <span className="hidden md:inline">FDC Proof</span>
           </button>
 
+          {/* Integrity Pack Modal Button */}
+          <button
+            onClick={() => setIsIntegrityModalOpen(true)}
+            className="flex items-center gap-1.5 h-8.5 rounded-full border border-zinc-200/90 bg-white hover:bg-zinc-50 text-zinc-700 px-3 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all hover:border-zinc-300 active:scale-95"
+            title="Download cryptographic audit pack and state proof bundle"
+          >
+            <Download className="h-3.5 w-3.5 text-zinc-500" />
+            <span className="hidden md:inline">Integrity Pack</span>
+          </button>
+
+          {/* Reset DAG Tree */}
           <button
             onClick={handleReset}
             disabled={isLoading}
-            className="flex items-center gap-1 rounded-full border border-zinc-200 bg-white p-1.5 text-xs text-zinc-600 hover:bg-zinc-50 transition shadow-2xs"
-            title="Reset Tree"
+            className="flex items-center justify-center h-8.5 w-8.5 rounded-full border border-zinc-200/90 bg-white hover:bg-zinc-50 text-zinc-600 hover:text-zinc-900 transition shadow-2xs active:scale-95"
+            title="Reset DAG Tree to initial state"
           >
             <RotateCcw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
           </button>
+
+          <div className="h-4 w-px bg-zinc-200/80 hidden sm:block mx-0.5" />
+
+          {/* Flare Coston2 Network Badge with Popover */}
+          <NetworkBadge />
+
+          {/* Web3 Wallet Integration */}
+          <WalletButton />
         </div>
       </header>
 
@@ -317,11 +331,24 @@ export default function DemoPage() {
           </button>
         </div>
 
-        {statusMessage && (
-          <span className="hidden lg:inline text-xs font-medium text-slate-600 truncate max-w-md bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200">
-            {statusMessage}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {activeScenario === "path4" && (
+            <button
+              onClick={() => setIsFdcModalOpen(true)}
+              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 transition shadow-2xs"
+              title="Inspect Flare Data Connector Merkle Proof and Consensus Round"
+            >
+              <FileCode2 className="h-3.5 w-3.5 text-purple-700" />
+              <span>Inspect FDC Merkle Proof</span>
+            </button>
+          )}
+
+          {statusMessage && (
+            <span className="hidden lg:inline text-xs font-medium text-slate-600 truncate max-w-md bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200">
+              {statusMessage}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Main Canvas & Inspector Layout */}
@@ -355,7 +382,7 @@ export default function DemoPage() {
       </div>
 
       {/* Real-time Event Stream Footer */}
-      <EventStream logs={logs} />
+      <EventStream logs={logs} onInspectFdcProof={() => setIsFdcModalOpen(true)} />
 
       {/* Cryptographic Integrity Pack Modal */}
       <IntegrityModal
@@ -367,6 +394,12 @@ export default function DemoPage() {
         childGranted={20000}
         jobLocked={rootNodeData?.locked || 0}
         isConserved={isConserved}
+      />
+
+      {/* Flare Data Connector (FDC) Attestation Proof Modal */}
+      <FdcProofModal
+        isOpen={isFdcModalOpen}
+        onClose={() => setIsFdcModalOpen(false)}
       />
     </div>
   )
