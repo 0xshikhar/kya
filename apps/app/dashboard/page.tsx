@@ -5,6 +5,7 @@ import Link from "next/link"
 import {
   Shield,
   ShieldAlert,
+  ShieldCheck,
   Bot,
   Layers,
   ArrowRight,
@@ -22,6 +23,9 @@ import {
   ArrowLeft,
   X,
   Wallet,
+  RotateCcw,
+  Sparkles,
+  Check,
 } from "lucide-react"
 import { WalletButton } from "@/components/wallet/wallet-button"
 import { useWallet } from "@/hooks/use-wallet"
@@ -376,24 +380,22 @@ export default function OperatorDashboard() {
                   <div
                     key={node.id}
                     onClick={() => setSelectedNode(node.id)}
-                    className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
-                      isRevoked
+                    className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${isRevoked
                         ? "bg-rose-50/50 border-rose-200 text-rose-950 opacity-80"
                         : isSelected
-                        ? "bg-[#fffafa] border-rose-400 ring-2 ring-rose-100 shadow-md"
-                        : "bg-white border-rose-100 hover:border-rose-200 hover:shadow-sm"
-                    }`}
+                          ? "bg-[#fffafa] border-rose-400 ring-2 ring-rose-100 shadow-md"
+                          : "bg-white border-rose-100 hover:border-rose-200 hover:shadow-sm"
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
                         <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-2xs ${
-                            isRevoked
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-2xs ${isRevoked
                               ? "bg-rose-100 border-rose-300 text-rose-700"
                               : node.id === "root"
-                              ? "bg-zinc-950 border-zinc-900 text-white"
-                              : "bg-rose-50 border-rose-200 text-rose-600"
-                          }`}
+                                ? "bg-zinc-950 border-zinc-900 text-white"
+                                : "bg-rose-50 border-rose-200 text-rose-600"
+                            }`}
                         >
                           {isRevoked ? (
                             <ShieldAlert className="w-5 h-5" />
@@ -407,11 +409,10 @@ export default function OperatorDashboard() {
                               {node.name}
                             </span>
                             <span
-                              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-semibold ${
-                                isRevoked
+                              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-semibold ${isRevoked
                                   ? "bg-rose-100 text-rose-800 border-rose-300"
                                   : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                              }`}
+                                }`}
                             >
                               {node.status}
                             </span>
@@ -493,9 +494,8 @@ export default function OperatorDashboard() {
                 <div className="flex justify-between py-1 border-b border-rose-50">
                   <span className="text-zinc-600">Status</span>
                   <span
-                    className={`font-semibold font-mono ${
-                      activeNode.status === "REVOKED" ? "text-rose-700" : "text-emerald-700"
-                    }`}
+                    className={`font-semibold font-mono ${activeNode.status === "REVOKED" ? "text-rose-700" : "text-emerald-700"
+                      }`}
                   >
                     {activeNode.status}
                   </span>
@@ -604,11 +604,10 @@ export default function OperatorDashboard() {
                     <td className="py-3.5 px-4 text-zinc-500">{job.deadline}</td>
                     <td className="py-3.5 px-4 text-right">
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${
-                          job.status === "COMPLETED"
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${job.status === "COMPLETED"
                             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                             : "bg-amber-50 text-amber-700 border-amber-200"
-                        }`}
+                          }`}
                       >
                         {job.status}
                       </span>
