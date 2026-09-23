@@ -53,7 +53,12 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/dashboard" className="hover:text-zinc-950 transition-colors">
-                  Operator App
+                  Operator Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link href="/demo" className="hover:text-zinc-950 transition-colors">
+                  Interactive DAG Visualizer
                 </Link>
               </li>
             </ul>

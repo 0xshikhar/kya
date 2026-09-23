@@ -53,7 +53,13 @@ export function Navbar() {
             href="/dashboard"
             className="hidden text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-950 md:inline px-3 py-1.5 rounded-full hover:bg-zinc-100"
           >
-            Console
+            Dashboard
+          </Link>
+          <Link
+            href="/demo"
+            className="hidden text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-950 md:inline px-3 py-1.5 rounded-full hover:bg-zinc-100"
+          >
+            DAG Demo
           </Link>
           <Button
             asChild
